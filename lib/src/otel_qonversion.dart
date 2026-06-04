@@ -2,7 +2,6 @@
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
 import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
-import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_qonversion_suppression.dart';
 
@@ -54,54 +53,69 @@ Future<T> tracedQonversion<T>({
   final t = tracer ?? OTel.tracerProvider().getTracer('otel_qonversion');
   final span = t.startSpan('qonversion $operation', kind: SpanKind.client);
   try {
-    span.setStringAttribute('rpc.system', 'qonversion');
+    span.addAttributes(
+        OTel.attributes([OTel.attributeString('rpc.system', 'qonversion')]));
     final r = await invoke();
     final res = r.result;
     if (res != null) {
       if (res.projectKey != null) {
-        span.setStringAttribute('qonversion.project.key', res.projectKey!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('qonversion.project.key', res.projectKey!)]));
       }
       if (res.userId != null) {
-        span.setStringAttribute('user.id', res.userId!);
+        span.addAttributes(
+            OTel.attributes([OTel.attributeString('user.id', res.userId!)]));
       }
       if (res.productId != null) {
-        span.setStringAttribute('qonversion.product.id', res.productId!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('qonversion.product.id', res.productId!)]));
       }
       if (res.offeringId != null) {
-        span.setStringAttribute('qonversion.offering.id', res.offeringId!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('qonversion.offering.id', res.offeringId!)]));
       }
       if (res.entitlementId != null) {
-        span.setStringAttribute(
-          'qonversion.entitlement.id',
-          res.entitlementId!,
-        );
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString(
+            'qonversion.entitlement.id',
+            res.entitlementId!,
+          )
+        ]));
       }
       if (res.isActive != null) {
-        span.setBoolAttribute('qonversion.active', res.isActive!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeBool('qonversion.active', res.isActive!)]));
       }
       if (res.store != null) {
-        span.setStringAttribute('qonversion.store', res.store!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('qonversion.store', res.store!)]));
       }
       if (res.priceAmount != null) {
-        span.setDoubleAttribute('qonversion.price.amount', res.priceAmount!);
+        span.addAttributes(OTel.attributes([
+          OTel.attributeDouble('qonversion.price.amount', res.priceAmount!)
+        ]));
       }
       if (res.currency != null) {
-        span.setStringAttribute('qonversion.currency', res.currency!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('qonversion.currency', res.currency!)]));
       }
       if (res.statusCode != null) {
-        span.setIntAttribute('http.response.status_code', res.statusCode!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeInt('http.response.status_code', res.statusCode!)]));
       }
       if (res.errorCode != null) {
-        span.setStringAttribute('qonversion.error.code', res.errorCode!);
+        span.addAttributes(OTel.attributes(
+            [OTel.attributeString('qonversion.error.code', res.errorCode!)]));
       }
-      final fail =
-          res.errorCode != null ||
+      final fail = res.errorCode != null ||
           (res.statusCode != null && res.statusCode! >= 400);
       if (fail) {
-        span.setStringAttribute(
-          ErrorResource.errorType.key,
-          res.errorCode ?? 'qonversion.error',
-        );
+        span.addAttributes(OTel.attributes([
+          OTel.attributeString(
+            ErrorResource.errorType.key,
+            res.errorCode ?? 'qonversion.error',
+          )
+        ]));
         span.setStatus(SpanStatusCode.Error, res.errorMessage);
       }
     }
